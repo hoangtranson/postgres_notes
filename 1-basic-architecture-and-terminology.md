@@ -11,6 +11,7 @@
 - [Create data](#create-data)
 - [Unlogged Table](#unlogged-table)
 - [Create a view](#create-a-view)
+- [Materialized view](#materialized-view)
 
 ## Access Postgres
 
@@ -188,3 +189,37 @@ WHERE active;
 ```
 
 Note: the temporary view is session-specific. Once you close the database connection or session, it will be dropped automatically.
+
+## Materialized view
+
+```bash
+CREATE MATERIALIZED VIEW users_by_active_status_mv AS
+SELECT active, COUNT(*) AS count_users
+FROM users
+GROUP BY active;
+```
+
+Great for pre-calculating aggregate for fast retrieval
+
+Output
+
+```bash
+db1=# CREATE MATERIALIZED VIEW users_by_active_status_mv AS
+SELECT active, COUNT(*) AS count_users
+FROM users
+GROUP BY active;
+SELECT 2
+db1=# select * from users_by_active_status_mv;
+ active | count_users
+--------+-------------
+ f      |           2
+ t      |           2
+(2 rows)
+```
+
+Materialized view is not refresh automatically
+
+```bash
+REFRESH MATERIALIZED VIEW users_by_active_status_mv;
+```
+
