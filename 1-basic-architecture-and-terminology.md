@@ -9,6 +9,8 @@
 - [List all table](#list-all-table)
 - [Searching for table](#searching-for-table)
 - [Create data](#create-data)
+- [Unlogged Table](#unlogged-table)
+- [Create a view](#create-a-view)
 
 ## Access Postgres
 
@@ -165,4 +167,24 @@ CREATE UNLOGGED TABLE users (
 
 This unlogged table is speed up ETL.
 
-ETL stands for Extract, Transform, Load. It is a process used in data management, specifically in data warehousing, to handle the movement and transformation of data from one or more sources to a destination system, usually for analytics or reporting purposes
+ETL stands for Extract, Transform, Load. It is a process used in data management, specifically in data warehousing, to handle the movement and transformation of data from one or more sources to a destination system, usually for analytics or reporting purposes.
+
+## Create a view
+
+```bash
+CREATE VIEW active_users AS
+SELECT * 
+FROM users
+WHERE active;
+```
+
+We also have temporary view
+
+```bash
+CREATE TEMPORARY VIEW active_users AS
+SELECT * 
+FROM users
+WHERE active;
+```
+
+Note: the temporary view is session-specific. Once you close the database connection or session, it will be dropped automatically.
