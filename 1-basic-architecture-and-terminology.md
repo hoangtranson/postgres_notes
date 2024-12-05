@@ -8,6 +8,7 @@
 - [Inspect a table](#inspect-a-table)
 - [List all table](#list-all-table)
 - [Searching for table](#searching-for-table)
+- [Create data](#create-data)
 
 ## Access Postgres
 
@@ -103,7 +104,7 @@ db1=# \dt
 (1 row)
 ```
 
-Searching for table
+## Searching for table
 
 ```bash
 \dt us*
@@ -123,3 +124,45 @@ db1=# \dt foo*
 Did not find any relation named "foo*".
 db1=#
 ```
+
+## Create data
+
+```bash
+INSERT INTO users (name) 
+VALUES ('Hoang'), 
+       ('User1');
+```
+
+output
+
+
+```bash
+db1=# INSERT INTO users (name)
+VALUES ('Hoang'),
+       ('User1');
+INSERT 0 2
+db1=# select * from users;
+ id | active | name
+----+--------+-------
+  1 | t      | Hoang
+  2 | t      | User1
+(2 rows)
+
+db1=#
+```
+
+## Unlogged Table
+
+Data written to unlogged table is not written to the WAL
+
+```bash
+CREATE UNLOGGED TABLE users (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name TEXT NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE
+);
+```
+
+This unlogged table is speed up ETL.
+
+ETL stands for Extract, Transform, Load. It is a process used in data management, specifically in data warehousing, to handle the movement and transformation of data from one or more sources to a destination system, usually for analytics or reporting purposes
