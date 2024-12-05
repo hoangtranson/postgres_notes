@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS users;
 \dt
 ```
 
-out
+output
 
 ```bash
 db1=# \dt
@@ -92,4 +92,25 @@ db1=# \dt
 --------+-------+-------+----------
  public | users | table | postgres
 (1 row)
+```
+
+Searching for table
+
+```bash
+\dt us*
+```
+
+output
+
+```bash
+db1=# \dt us*
+         List of relations
+ Schema | Name  | Type  |  Owner
+--------+-------+-------+----------
+ public | users | table | postgres
+(1 row)
+
+db1=# \dt foo*
+Did not find any relation named "foo*".
+db1=#
 ```
