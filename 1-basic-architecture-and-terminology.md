@@ -1,5 +1,14 @@
 # Basic Architecture and Terminology
 
+- [Access Postgres](#access-postgres)
+- [List out database](#list-out-database)
+- [Create database](#create-database)
+- [Create table](#create-table)
+- [Delete Table](#delete-table)
+- [Inspect a table](#inspect-a-table)
+- [List all table](#list-all-table)
+- [Searching for table](#searching-for-table)
+
 ## Access Postgres
 
 ```bash
