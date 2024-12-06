@@ -4,6 +4,8 @@
 - [Create table in a schema](#create-table-in-a-schema)
 - [Referencing object by name in schema](#referencing-object-by-name-in-schema)
 - [Multi-tenancy](#multi-tenancy)
+- [Migrations using Schemas](#migrations-using-schemas)
+- [Information Schema](#information-schema)
 
 What is Schema?
 
