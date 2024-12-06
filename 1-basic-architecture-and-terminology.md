@@ -33,7 +33,7 @@ psql -U postgres -d mydb -h localhost -p 5432
 
 ## Create database
 
-```bash
+```sql
 CREATE DATABASE db1 OWNER postgres;
 
 \c db1
@@ -52,7 +52,7 @@ db1=#
 
 ## Create table
 
-```bash
+```sql
 CREATE TABLE users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -62,7 +62,7 @@ CREATE TABLE users (
 
 Create a table only if it does not already exist
 
-```bash
+```sql
 CREATE TABLE IF NOT EXISTS users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -72,13 +72,13 @@ CREATE TABLE IF NOT EXISTS users (
 
 ## Delete Table
 
-```bash
+```sql
 DROP TABLE users;
 ```
 
 if the table does not exist, no error is raises
 
-```bash
+```sql
 DROP TABLE IF EXISTS users;
 ```
 
@@ -130,7 +130,7 @@ db1=#
 
 ## Create data
 
-```bash
+```sql
 INSERT INTO users (name) 
 VALUES ('Hoang'), 
        ('User1');
@@ -158,7 +158,7 @@ db1=#
 
 Data written to unlogged table is not written to the WAL
 
-```bash
+```sql
 CREATE UNLOGGED TABLE users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name TEXT NOT NULL,
@@ -172,7 +172,7 @@ ETL stands for Extract, Transform, Load. It is a process used in data management
 
 ## Create a view
 
-```bash
+```sql
 CREATE VIEW active_users AS
 SELECT * 
 FROM users
@@ -181,7 +181,7 @@ WHERE active;
 
 We also have temporary view
 
-```bash
+```sql
 CREATE TEMPORARY VIEW active_users AS
 SELECT * 
 FROM users
@@ -192,7 +192,7 @@ Note: the temporary view is session-specific. Once you close the database connec
 
 ## Materialized view
 
-```bash
+```sql
 CREATE MATERIALIZED VIEW users_by_active_status_mv AS
 SELECT active, COUNT(*) AS count_users
 FROM users
@@ -222,4 +222,5 @@ Materialized view is not refresh automatically
 ```bash
 REFRESH MATERIALIZED VIEW users_by_active_status_mv;
 ```
+
 
