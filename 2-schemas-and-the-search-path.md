@@ -402,3 +402,110 @@ db1=> select * from users;
 
 db1=>
 ```
+
+## Information Schema
+
+```sql
+SELECT * FROM pg_tables WHERE tablename ='users';
+```
+
+```bash
+db1=> select * from pg_tables where tablename ='users';
+ schemaname | tablename | tableowner | tablespace | hasindexes | hasrules | hastriggers | rowsecurity
+------------+-----------+------------+------------+------------+----------+-------------+-------------
+ public     | users     | postgres   |            | t          | f        | f           | f
+(1 row)
+
+db1=>
+```
+
+Information about index
+
+```sql
+SELECT * FROM pg_indexes WHERE tablename='users';
+```
+
+Output
+
+```bash
+db1=> select * from pg_indexes where tablename='users';
+ schemaname | tablename | indexname  | tablespace |                            indexdef
+------------+-----------+------------+------------+-----------------------------------------------------------------
+ public     | users     | users_pkey |            | CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)
+(1 row)
+
+db1=>
+```
+
+Information about all database objects
+
+```sql
+SELECt relname, relkind FROM pg_class WHERE relname LIKE '%user%';
+```
+
+Output
+
+```bash
+db1=> select relname, relkind from pg_class where relname like '%user%';
+              relname              | relkind
+-----------------------------------+---------
+ users_id_seq                      | S
+ users_pkey                        | i
+ active_users                      | v
+ users_by_active_status_mv         | m
+ users                             | r
+ users                             | v
+ pg_user_mapping_oid_index         | i
+ pg_user_mapping_user_server_index | i
+ pg_user_mapping                   | r
+ pg_stat_xact_user_functions       | v
+ pg_user                           | v
+ pg_stat_xact_user_tables          | v
+ pg_stat_user_tables               | v
+ pg_statio_user_tables             | v
+ pg_stat_user_indexes              | v
+ pg_statio_user_indexes            | v
+ pg_statio_user_sequences          | v
+ pg_stat_user_functions            | v
+ pg_user_mappings                  | v
+ user_mappings                     | v
+ user_defined_types                | v
+ user_mapping_options              | v
+ _pg_user_mappings                 | v
+(23 rows)
+
+db1=>
+```
+
+- pg_stat_activity: Information about current activity
+- pg_stat_all_table: Table access statistics
+- pg_stat_all_indexes: Index access statistics
+- pg_stats: statistics about table columns
+
+```bash
+\set ECHO_HIDDEN on
+```
+
+to turn on hidden commands
+
+```bash
+db1=> \dt
+********* QUERY **********
+SELECT n.nspname as "Schema",
+  c.relname as "Name",
+  CASE c.relkind WHEN 'r' THEN 'table' WHEN 'v' THEN 'view' WHEN 'm' THEN 'materialized view' WHEN 'i' THEN 'index' WHEN 'S' THEN 'sequence' WHEN 's' THEN 'special' WHEN 't' THEN 'TOAST table' WHEN 'f' THEN 'foreign table' WHEN 'p' THEN 'partitioned table' WHEN 'I' THEN 'partitioned index' END as "Type",
+  pg_catalog.pg_get_userbyid(c.relowner) as "Owner"
+FROM pg_catalog.pg_class c
+     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+     LEFT JOIN pg_catalog.pg_am am ON am.oid = c.relam
+WHERE c.relkind IN ('r','p','')
+      AND n.nspname <> 'pg_catalog'
+      AND n.nspname !~ '^pg_toast'
+      AND n.nspname <> 'information_schema'
+  AND pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1,2;
+**************************
+
+Did not find any relations.
+db1=>
+```
