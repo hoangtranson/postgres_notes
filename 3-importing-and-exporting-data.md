@@ -1,5 +1,10 @@
 # Importing and Exporting Data
 
+- [Copy command](#copy-command)
+- [Import from CSV](#import-from-csv)
+- [Export table to CSV](#export-table-to-csv)
+- [Report](#report)
+
 ## Copy command
 
 - Export data to text, CSV, or binary format
