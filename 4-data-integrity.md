@@ -1,5 +1,15 @@
 # Data Integrity
 
+- [Column Types](#column-types)
+- [Constraints](#constraints)
+- [Foreign Key](#foreign-key)
+  - [Not Null Constraint](#not-null-constraint)
+  - [Primary Key](#primary-key)
+  - [Unique Constraint](#unique-constraint)
+  - [Check Constraint](#check-constraint)
+- [Adding constraints to existing tables](#adding-constraints-to-existing-tables)
+- [Crucial for data integrity](#crucial-for-data-integrity)
+
 ## Column Types
 
 ```sql
@@ -238,3 +248,136 @@ db1=# INSERT INTO users (name) VALUES ('le');
 ERROR:  new row for relation "users" violates check constraint "name_must_contain_whitespace"
 DETAIL:  Failing row contains (21, t, le, null).
 ```
+
+## Foreign Key
+
+Add a foreign key between users and their credentials
+
+```bash
+db1=# \d restricted.credentials
+                      Table "restricted.credentials"
+  Column  |  Type   | Collation | Nullable |           Default
+----------+---------+-----------+----------+------------------------------
+ id       | integer |           | not null | generated always as identity
+ user_id  | integer |           | not null |
+ password | text    |           | not null |
+Indexes:
+    "credentials_pkey" PRIMARY KEY, btree (id)
+
+db1=# \d users
+                                   Table "public.users"
+   Column    |         Type          | Collation | Nullable |           Default
+-------------+-----------------------+-----------+----------+------------------------------
+ id          | integer               |           | not null | generated always as identity
+ active      | boolean               |           | not null | true
+ name        | character varying(20) |           | not null |
+ date_joined | date                  |           |          |
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+Check constraints:
+    "name_must_contain_whitespace" CHECK (name::text ~~ '% %'::text)
+
+db1=#
+
+db1=# ALTER TABLE restricted.credentials ADD CONSTRAINT user_fk
+db1-# FOREIGN KEY (user_id) REFERENCES users(id)
+db1-# ON DELETE CASCADE;
+ALTER TABLE
+
+db1=# \d restricted.credentials
+                      Table "restricted.credentials"
+  Column  |  Type   | Collation | Nullable |           Default
+----------+---------+-----------+----------+------------------------------
+ id       | integer |           | not null | generated always as identity
+ user_id  | integer |           | not null |
+ password | text    |           | not null |
+Indexes:
+    "credentials_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "user_fk" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+
+db1=# \d users
+                                   Table "public.users"
+   Column    |         Type          | Collation | Nullable |           Default
+-------------+-----------------------+-----------+----------+------------------------------
+ id          | integer               |           | not null | generated always as identity
+ active      | boolean               |           | not null | true
+ name        | character varying(20) |           | not null |
+ date_joined | date                  |           |          |
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+Check constraints:
+    "name_must_contain_whitespace" CHECK (name::text ~~ '% %'::text)
+Referenced by:
+    TABLE "restricted.credentials" CONSTRAINT "user_fk" FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+
+db1=#
+
+db1=# INSERT INTO restricted.credentials (user_id, password) VALUES (99, 'test123');
+ERROR:  insert or update on table "credentials" violates foreign key constraint "user_fk"
+DETAIL:  Key (user_id)=(99) is not present in table "users".
+db1=#
+```
+
+How deletes are handled in child tables
+
+- CASCADE: When a user is deleted from users table, delete the associated credentials in the table credentials
+- SET NULL: When a user is deleted from users table, set the user_id to null in the table credentials
+- RESTRICT: When a user is deleted from users table, do not allow the deletion
+
+It is easier to remove constraints than add them
+
+**Always start with constraints**
+
+## Adding constraints to existing tables
+
+What happening under the hood:
+
+- lock table
+- enforce constraint for new rows
+- validate the existing data
+- release lock
+
+Cant lock the system for a long time then what can we do?
+
+Split the process into two parts:
+
+1. Enforce constraints for new rows
+
+```sql
+ALTER TABLE users ADD CONSTRAINT name_must_contain_whitespace CHECK (name LIKE '% %') NOT VALID;
+```
+
+NOT VALID: Don't validate the existing data
+
+2. Validate the existing data
+
+```sql
+ALTER TABLE users VALIDATE CONSTRAINT name_must_contain_whitespace;
+```
+
+- It is easier to change constraints than column data types
+- `VARCHAR(N)` -> `TEXT` with a check constraint on length
+
+Replace `VARCHAR(N)` with `TEXT`
+
+```sql
+CREATE TABLE users (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    -- name VARCHAR(20) NOT NULL,
+    active BOOLEAN NOT NULL,
+    date_joined DATE,
+    name TEXT NOT NULL,
+    CONSTRAINT name_must_contain_whitespace CHECK (name LIKE '% %')
+);
+```
+
+This will make it easier to check in the future
+
+## Crucial for data integrity
+
+- database is the source of truth
+- database is the last line of defense
+- data integrity is crucial
+
+Constraints are good... use them!!!
