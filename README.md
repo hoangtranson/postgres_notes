@@ -6,3 +6,4 @@
 - [Data Integrity](./4-data-integrity.md)
 - [Users and Privileges](./5-users-and-privileges.md)
 - [The Path of a Query](./6-the-path-of-a-query.md)
+- [B-Tree Index](./7-b-tree-index.md)
