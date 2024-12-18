@@ -1,6 +1,9 @@
 # The Path of a Query
 
 - [General Flow](#general-flow)
+- [Query Optimizer](#query-optimizer)
+- [Rule vs Cost Based Optimizer](#rule-vs-cost-based-optimizer)
+- [Execution Plan](#execution-plan)
 
 ## General Flow
 
